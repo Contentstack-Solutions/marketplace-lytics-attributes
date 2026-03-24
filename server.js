@@ -11,6 +11,26 @@ app.get("/json-rte.js", (req, res, next) => {
   next();
 });
 
+// Proxy for Lytics API (avoids browser CORS restrictions)
+app.get("/api/lytics/schema", async (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    return res.status(400).json({ error: "Authorization header required" });
+  }
+  try {
+    const response = await fetch("https://api.lytics.io/api/schema/user", {
+      headers: {
+        Authorization: token,
+        Accept: "application/json",
+      },
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(502).json({ error: "Failed to reach Lytics API" });
+  }
+});
+
 // Serve static files from dist
 app.use(express.static(distDir));
 

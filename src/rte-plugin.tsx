@@ -5,7 +5,7 @@ import { AttributePicker } from "./components/AttributePicker";
 import { LyticsAttribute, LyticsAttributesAppConfig } from "./common/types/types";
 
 const ELEMENT_TYPE = "lytics-attribute";
-const LYTICS_API_BASE = "https://api.lytics.io";
+const LYTICS_PROXY = "/api/lytics/schema";
 
 const ToolbarIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -171,7 +171,7 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
         modalContent
       );
 
-      fetch(`${LYTICS_API_BASE}/api/schema/_user`, {
+      fetch(LYTICS_PROXY, {
         headers: { Authorization: apiToken },
       })
         .then((res) => {
@@ -179,13 +179,13 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
           return res.json();
         })
         .then((data) => {
-          const fields = data?.data?.fields || data?.data?.by_field || {};
+          const columns = data?.data?.columns || [];
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const attrs: LyticsAttribute[] = Object.entries(fields).map(([slug, field]: [string, any]) => ({
-            slug,
-            display_name: field.shortname || field.as || slug,
-            description: field.description || "",
-            type: field.type || "string",
+          const attrs: LyticsAttribute[] = columns.filter((col: any) => !col.hidden).map((col: any) => ({
+            slug: col.as,
+            display_name: col.shortdesc || col.as,
+            description: col.longdesc || "",
+            type: col.type || "string",
           }));
           attrs.sort((a, b) => a.slug.localeCompare(b.slug));
 

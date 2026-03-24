@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { LyticsAttribute } from "../types/types";
 
-const LYTICS_API_BASE = "https://api.lytics.io";
-
 export const useLyticsAttributes = (apiToken: string | null) => {
   const [attributes, setAttributes] = useState<LyticsAttribute[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +17,7 @@ export const useLyticsAttributes = (apiToken: string | null) => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`${LYTICS_API_BASE}/api/schema/_user`, {
+        const res = await fetch("/api/lytics/schema", {
           headers: {
             Authorization: apiToken,
           },
@@ -30,17 +28,19 @@ export const useLyticsAttributes = (apiToken: string | null) => {
         }
 
         const data = await res.json();
-        const fields = data?.data?.fields || data?.data?.by_field || {};
+        const columns = data?.data?.columns || [];
 
-        const attrs: LyticsAttribute[] = Object.entries(fields).map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const attrs: LyticsAttribute[] = columns
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ([slug, field]: [string, any]) => ({
-            slug,
-            display_name: field.shortname || field.as || slug,
-            description: field.description || "",
-            type: field.type || "string",
-          })
-        );
+          .filter((col: any) => !col.hidden)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((col: any) => ({
+            slug: col.as,
+            display_name: col.shortdesc || col.as,
+            description: col.longdesc || "",
+            type: col.type || "string",
+          }));
 
         attrs.sort((a, b) => a.slug.localeCompare(b.slug));
         setAttributes(attrs);

@@ -1,12 +1,4 @@
 const localeTexts = {
-  404: {
-    title: "404: Not Found",
-    body: "The link you tried to access doesn't seem to exist. <br />Please verify and enter the correct URL.",
-    button: {
-      text: "Learn More",
-      url: "https://www.contentstack.com/docs/developers/developer-hub/about-ui-locations/",
-    },
-  },
   ConfigScreen: {
     title: "Lytics Attributes Configuration",
     description:
@@ -23,10 +15,9 @@ const localeTexts = {
     },
     defaultsSection: {
       title: "Default Values",
-      globalDefaultLabel: "Global Default Value",
-      globalDefaultPlaceholder: "e.g. visitor",
-      globalDefaultHelp:
-        "Fallback text used when an attribute has no value and no per-token default is specified. Leave empty to render nothing.",
+      enableDefaultsLabel: "Enable default values",
+      enableDefaultsHelp:
+        'When enabled, tokens with the syntax {{attribute|default}} will use the default value if the attribute is empty. When disabled, the default portion is ignored.',
     },
     saveHint: 'Click "Save" to apply your configuration.',
   },

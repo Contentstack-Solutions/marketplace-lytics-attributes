@@ -1,6 +1,6 @@
 {
   "name": "marketplace-lytics-attributes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "files": [
     "dist"
@@ -8,8 +8,7 @@
   "dependencies": {
     "@contentstack/app-sdk": "^2.3.5",
     "@contentstack/venus-components": "^3.0.3",
-    "html-react-parser": "^3.0.8",
-    "jsrsasign": "^11.1.0",
+"jsrsasign": "^11.1.0",
     "lodash": "^4.17.21",
     "node-forge": "^1.3.2",
     "react": "^18.2.0",

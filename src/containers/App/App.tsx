@@ -7,7 +7,6 @@ import { CustomFieldExtensionProvider } from "../../common/providers/CustomField
 const CustomFieldExtension = React.lazy(() => import("../CustomField/CustomField"));
 const AppConfiguration = React.lazy(() => import("../AppConfiguration/AppConfiguration"));
 const EntrySidebar = React.lazy(() => import("../EntrySidebar/EntrySidebar"));
-const PageNotFound = React.lazy(() => import("../404/404"));
 const DefaultPage = React.lazy(() => import("../index"));
 
 function App() {
@@ -42,7 +41,6 @@ function App() {
               </Suspense>
             }
           />
-          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </MarketplaceAppProvider>
     </ErrorBoundary>

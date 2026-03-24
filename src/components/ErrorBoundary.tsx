@@ -1,7 +1,5 @@
 import React from "react";
 
-const ENV: string = process.env.NODE_ENV || "production";
-
 interface ErrorBoundaryProps {
   children: React.ReactNode;
 }
@@ -9,7 +7,7 @@ interface ErrorBoundaryProps {
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
   state: { hasError: boolean };
 
-  constructor(props: { children: React.ReactNode }) {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
@@ -19,9 +17,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
   }
 
   componentDidCatch(error: Error) {
-    if (ENV === "development") {
-      console.error(error);
-    }
+    console.error(error);
   }
 
   render() {
