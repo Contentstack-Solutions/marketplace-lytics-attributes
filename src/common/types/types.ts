@@ -16,6 +16,8 @@ export interface LyticsAttribute {
 export interface LyticsAttributesAppConfig {
   lyticsApiToken: string;
   enableDefaults: boolean;
+  restrictAttributes: boolean;
+  allowedAttributes: string[];
 }
 
 export interface AttributeFieldData {

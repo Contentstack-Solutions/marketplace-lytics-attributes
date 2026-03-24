@@ -1,101 +1,231 @@
 .app-config {
   max-width: 720px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px 30px;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #222;
 }
 
-.app-config-header {
-  margin-bottom: 24px;
+.app-config-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
 }
 
-.app-config-header h2 {
-  margin: 0 0 8px;
+.app-config-description {
+  font-size: 13px;
+  color: #647696;
+  margin: 0 0 24px;
 }
 
 .app-config-section {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding: 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #dde3ee;
   border-radius: 8px;
   background: #fff;
 }
 
-.app-config-field {
-  margin-top: 8px;
+.app-config-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: #222;
 }
 
-.app-config-connection-status {
-  margin-top: 12px;
+.app-config-field {
+  margin-bottom: 4px;
+}
+
+.app-config-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 6px;
+}
+
+.app-config-input {
+  width: 100%;
   padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #c1c9d2;
   border-radius: 4px;
+  box-sizing: border-box;
+  font-family: inherit;
+  color: #222;
+  background: #fff;
+  transition: border-color 0.15s;
+}
+
+.app-config-input:focus {
+  outline: none;
+  border-color: #6c5ce7;
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+}
+
+.app-config-help {
+  font-size: 12px;
+  color: #8e96a3;
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+
+.app-config-status {
+  margin-top: 12px;
   font-size: 13px;
 }
 
 .status-testing {
-  color: #6b7280;
+  color: #647696;
 }
 
 .status-success {
-  color: #059669;
+  color: #0e7f3e;
 }
 
 .status-error {
-  color: #dc2626;
+  color: #d83a52;
 }
 
-.app-config-attr-list {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #f3f4f6;
-  border-radius: 4px;
-  margin-top: 8px;
-}
-
-.app-config-attr-item {
+.app-config-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
-  border-bottom: 1px solid #f9fafb;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.app-config-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #6c5ce7;
+}
+
+.app-config-toggle-label {
+  font-weight: 500;
+  color: #222;
+}
+
+.app-config-attr-list {
+  max-height: 360px;
+  overflow-y: auto;
+  border: 1px solid #edf0f5;
+  border-radius: 4px;
+}
+
+.app-config-attr-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 13px;
 }
 
-.app-config-attr-item:last-child {
-  border-bottom: none;
+.app-config-attr-table thead {
+  position: sticky;
+  top: 0;
+  background: #f4f6f9;
 }
 
-.app-config-attr-slug {
-  font-family: monospace;
+.app-config-attr-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #647696;
+  border-bottom: 1px solid #dde3ee;
+}
+
+.app-config-attr-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid #f4f6f9;
+}
+
+.app-config-attr-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.attr-slug {
+  font-family: "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-weight: 600;
   color: #6c5ce7;
-  min-width: 0;
+  font-size: 12px;
 }
 
-.app-config-attr-name {
-  color: #6b7280;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.attr-name {
+  color: #647696;
 }
 
-.app-config-attr-type {
+.attr-type {
   font-size: 11px;
-  color: #9ca3af;
-  background: #f3f4f6;
-  padding: 1px 6px;
-  border-radius: 3px;
+  color: #8e96a3;
+}
+
+.app-config-allowed {
+  margin-top: 16px;
+}
+
+.app-config-allowed-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.app-config-search {
+  flex: 1;
+}
+
+.app-config-allowed-actions {
+  display: flex;
+  gap: 8px;
   white-space: nowrap;
+}
+
+.app-config-link-btn {
+  background: none;
+  border: none;
+  color: #6c5ce7;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: inherit;
+}
+
+.app-config-link-btn:hover {
+  text-decoration: underline;
+}
+
+.app-config-allowed-count {
+  font-size: 12px;
+  color: #8e96a3;
+  margin-bottom: 8px;
+}
+
+.app-config-attr-table tbody tr {
+  cursor: pointer;
+}
+
+.attr-row-selected {
+  background: #f0edfc;
+}
+
+.app-config-attr-table input[type="checkbox"] {
+  accent-color: #6c5ce7;
 }
 
 .app-config-attr-more {
   padding: 8px 12px;
-  color: #9ca3af;
+  color: #8e96a3;
   font-size: 12px;
   text-align: center;
+  border-top: 1px solid #edf0f5;
 }
 
 .app-config-save-hint {
-  margin-top: 16px;
+  font-size: 13px;
+  color: #8e96a3;
+  font-style: italic;
+  margin-top: 8px;
 }

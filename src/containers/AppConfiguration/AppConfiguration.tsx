@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppLocation } from "../../common/hooks/useAppLocation";
 import { useLyticsAttributes } from "../../common/hooks/useLyticsAttributes";
 import { LyticsAttributesAppConfig } from "../../common/types/types";
 import localeTexts from "../../common/locales/en-us";
-import { FieldLabel, TextInput, Checkbox, HelpText, InstructionText } from "@contentstack/venus-components";
+import "./AppConfiguration.css";
 
 const DEFAULT_CONFIG: LyticsAttributesAppConfig = {
   lyticsApiToken: "",
   enableDefaults: true,
+  restrictAttributes: false,
+  allowedAttributes: [],
 };
 
 interface InstallationData {
@@ -70,29 +72,26 @@ const AppConfiguration: React.FC = () => {
 
   return (
     <div className="app-config">
-      <div className="app-config-header">
-        <h2>{t.title}</h2>
-        <InstructionText>{t.description}</InstructionText>
-      </div>
+      <h2 className="app-config-title">{t.title}</h2>
+      <p className="app-config-description">{t.description}</p>
 
       <div className="app-config-section">
-        <FieldLabel htmlFor="lytics-token">{t.lyticsSection.title}</FieldLabel>
+        <h3 className="app-config-section-title">{t.lyticsSection.title}</h3>
+
         <div className="app-config-field">
-          <TextInput
-            id="lytics-token"
+          <label className="app-config-label">{t.lyticsSection.apiTokenLabel}</label>
+          <input
             type="password"
             value={config.lyticsApiToken}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setConfig((prev) => ({ ...prev, lyticsApiToken: e.target.value }))
-            }
+            onChange={(e) => setConfig((prev) => ({ ...prev, lyticsApiToken: e.target.value }))}
             placeholder={t.lyticsSection.apiTokenPlaceholder}
-            name="lyticsApiToken"
+            className="app-config-input"
           />
-          <HelpText>{t.lyticsSection.apiTokenHelp}</HelpText>
+          <p className="app-config-help">{t.lyticsSection.apiTokenHelp}</p>
         </div>
 
         {config.lyticsApiToken && (
-          <div className="app-config-connection-status">
+          <div className="app-config-status">
             {attrsLoading && (
               <span className="status-testing">{t.lyticsSection.connectionTesting}</span>
             )}
@@ -111,38 +110,151 @@ const AppConfiguration: React.FC = () => {
       </div>
 
       <div className="app-config-section">
-        <FieldLabel htmlFor="defaults-toggle">{t.defaultsSection.title}</FieldLabel>
-        <Checkbox
-          label={t.defaultsSection.enableDefaultsLabel}
-          checked={config.enableDefaults}
-          onClick={() => setConfig((prev) => ({ ...prev, enableDefaults: !prev.enableDefaults }))}
-        />
-        <HelpText>{t.defaultsSection.enableDefaultsHelp}</HelpText>
+        <h3 className="app-config-section-title">{t.defaultsSection.title}</h3>
+        <label className="app-config-toggle">
+          <input
+            type="checkbox"
+            checked={config.enableDefaults}
+            onChange={(e) => setConfig((prev) => ({ ...prev, enableDefaults: e.target.checked }))}
+          />
+          <span className="app-config-toggle-label">{t.defaultsSection.enableDefaultsLabel}</span>
+        </label>
+        <p className="app-config-help">{t.defaultsSection.enableDefaultsHelp}</p>
       </div>
 
       {config.lyticsApiToken && !attrsLoading && !attrsError && attributes.length > 0 && (
-        <div className="app-config-section">
-          <FieldLabel htmlFor="attr-list">Available Attributes ({attributes.length})</FieldLabel>
+        <AllowedAttributesSection
+          attributes={attributes}
+          config={config}
+          setConfig={setConfig}
+        />
+      )}
+
+      <p className="app-config-save-hint">{t.saveHint}</p>
+    </div>
+  );
+};
+
+interface AllowedAttributesSectionProps {
+  attributes: { slug: string; display_name: string; type: string }[];
+  config: LyticsAttributesAppConfig;
+  setConfig: React.Dispatch<React.SetStateAction<LyticsAttributesAppConfig>>;
+}
+
+const AllowedAttributesSection: React.FC<AllowedAttributesSectionProps> = ({
+  attributes,
+  config,
+  setConfig,
+}) => {
+  const [search, setSearch] = useState("");
+  const t = localeTexts.ConfigScreen;
+
+  const filtered = useMemo(() => {
+    if (!search) return attributes;
+    const q = search.toLowerCase();
+    return attributes.filter(
+      (a) => a.slug.toLowerCase().includes(q) || a.display_name.toLowerCase().includes(q)
+    );
+  }, [attributes, search]);
+
+  const toggleAttribute = (slug: string) => {
+    setConfig((prev) => {
+      const allowed = new Set(prev.allowedAttributes);
+      if (allowed.has(slug)) {
+        allowed.delete(slug);
+      } else {
+        allowed.add(slug);
+      }
+      return { ...prev, allowedAttributes: Array.from(allowed) };
+    });
+  };
+
+  const selectAll = () => {
+    setConfig((prev) => ({
+      ...prev,
+      allowedAttributes: filtered.map((a) => a.slug),
+    }));
+  };
+
+  const clearAll = () => {
+    setConfig((prev) => ({ ...prev, allowedAttributes: [] }));
+  };
+
+  return (
+    <div className="app-config-section">
+      <h3 className="app-config-section-title">{t.allowedSection.title}</h3>
+
+      <label className="app-config-toggle">
+        <input
+          type="checkbox"
+          checked={config.restrictAttributes}
+          onChange={(e) =>
+            setConfig((prev) => ({ ...prev, restrictAttributes: e.target.checked }))
+          }
+        />
+        <span className="app-config-toggle-label">{t.allowedSection.enableLabel}</span>
+      </label>
+      <p className="app-config-help">{t.allowedSection.enableHelp}</p>
+
+      {config.restrictAttributes && (
+        <div className="app-config-allowed">
+          <div className="app-config-allowed-header">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t.allowedSection.searchPlaceholder}
+              className="app-config-input app-config-search"
+            />
+            <div className="app-config-allowed-actions">
+              <button type="button" className="app-config-link-btn" onClick={selectAll}>
+                Select all
+              </button>
+              <button type="button" className="app-config-link-btn" onClick={clearAll}>
+                Clear all
+              </button>
+            </div>
+          </div>
+          <div className="app-config-allowed-count">
+            {config.allowedAttributes.length} of {attributes.length} selected
+          </div>
           <div className="app-config-attr-list">
-            {attributes.slice(0, 50).map((attr) => (
-              <div key={attr.slug} className="app-config-attr-item">
-                <span className="app-config-attr-slug">{attr.slug}</span>
-                {attr.display_name !== attr.slug && (
-                  <span className="app-config-attr-name">{attr.display_name}</span>
-                )}
-                <span className="app-config-attr-type">{attr.type}</span>
-              </div>
-            ))}
-            {attributes.length > 50 && (
-              <div className="app-config-attr-more">
-                ...and {attributes.length - 50} more
-              </div>
-            )}
+            <table className="app-config-attr-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 32 }}></th>
+                  <th>Slug</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((attr) => (
+                  <tr
+                    key={attr.slug}
+                    className={config.allowedAttributes.includes(attr.slug) ? "attr-row-selected" : ""}
+                    onClick={() => toggleAttribute(attr.slug)}
+                  >
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={config.allowedAttributes.includes(attr.slug)}
+                        onChange={() => toggleAttribute(attr.slug)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </td>
+                    <td className="attr-slug">{attr.slug}</td>
+                    <td className="attr-name">
+                      {attr.display_name !== attr.slug ? attr.display_name : ""}
+                    </td>
+                    <td className="attr-type">{attr.type}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
-
-      <InstructionText className="app-config-save-hint">{t.saveHint}</InstructionText>
     </div>
   );
 };

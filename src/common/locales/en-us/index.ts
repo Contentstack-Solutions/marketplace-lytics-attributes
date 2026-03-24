@@ -19,6 +19,13 @@ const localeTexts = {
       enableDefaultsHelp:
         'When enabled, tokens with the syntax {{attribute|default}} will use the default value if the attribute is empty. When disabled, the default portion is ignored.',
     },
+    allowedSection: {
+      title: "Allowed Attributes",
+      enableLabel: "Restrict attributes",
+      enableHelp:
+        "When enabled, only the selected attributes below will be available for editors to insert. When disabled, all attributes are available.",
+      searchPlaceholder: "Search attributes...",
+    },
     saveHint: 'Click "Save" to apply your configuration.',
   },
   CustomField: {
