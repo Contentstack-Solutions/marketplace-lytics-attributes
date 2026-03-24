@@ -1,0 +1,61 @@
+{
+  "description": "Lytics Attributes — use Lytics profile attributes as personalization tokens in content",
+  "icon": "",
+  "name": "Lytics Attributes",
+  "organization_uid": "",
+  "target_type": "stack",
+  "visibility": "private",
+  "uid": "",
+  "ui_location": {
+    "signed": false,
+    "base_url": "http://localhost:3000",
+    "locations": [
+      {
+        "type": "cs.cm.stack.custom_field",
+        "meta": [
+          {
+            "multiple": false,
+            "path": "/custom-field",
+            "signed": false,
+            "enabled": true,
+            "data_type": "json"
+          }
+        ]
+      },
+      {
+        "type": "cs.cm.stack.config",
+        "meta": [
+          {
+            "path": "/app-configuration",
+            "signed": false,
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "type": "cs.cm.stack.sidebar",
+        "meta": [
+          {
+            "path": "/entry-sidebar",
+            "signed": false,
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "type": "cs.cm.stack.rte",
+        "meta": [
+          {
+            "path": "/json-rte.js",
+            "signed": false,
+            "enabled": true
+          }
+        ]
+      }
+    ]
+  },
+  "hosting": {
+    "provider": "external",
+    "deployment_url": "http://localhost:3000"
+  }
+}
