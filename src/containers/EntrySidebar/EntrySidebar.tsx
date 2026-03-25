@@ -36,8 +36,8 @@ const EntrySidebar: React.FC = () => {
   const { attributes, loading, error } = useLyticsAttributes(apiToken);
   const [copied, setCopied] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [transform, setTransform] = useState("");
-  const [numberFormat, setNumberFormat] = useState("");
+  const [transform, setTransform] = useState(appConfig?.defaultTextTransform || "capitalize");
+  const [numberFormat, setNumberFormat] = useState(appConfig?.defaultNumberFormat || "number");
   const [defaultValue, setDefaultValue] = useState("");
 
   const visibleAttributes = useMemo(() => {

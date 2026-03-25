@@ -217,7 +217,13 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
 
           if (modalContent) {
             ReactDOM.render(
-              <RteAttributePicker attributes={attrs} onInsert={insertAttribute} onCancel={cleanup} />,
+              <RteAttributePicker
+                attributes={attrs}
+                onInsert={insertAttribute}
+                onCancel={cleanup}
+                defaultTransform={config?.defaultTextTransform || "capitalize"}
+                defaultNumberFormat={config?.defaultNumberFormat || "number"}
+              />,
               modalContent
             );
           }
@@ -265,10 +271,12 @@ const RteAttributePicker: React.FC<{
   attributes: LyticsAttribute[];
   onInsert: (slug: string, transform: string, numberFormat: string, defaultValue: string) => void;
   onCancel: () => void;
-}> = ({ attributes, onInsert, onCancel }) => {
+  defaultTransform: string;
+  defaultNumberFormat: string;
+}> = ({ attributes, onInsert, onCancel, defaultTransform, defaultNumberFormat }) => {
   const [search, setSearch] = React.useState("");
-  const [transform, setTransform] = React.useState("");
-  const [numberFormat, setNumberFormat] = React.useState("");
+  const [transform, setTransform] = React.useState(defaultTransform);
+  const [numberFormat, setNumberFormat] = React.useState(defaultNumberFormat);
   const [defaultValue, setDefaultValue] = React.useState("");
 
   const filtered = React.useMemo(() => {

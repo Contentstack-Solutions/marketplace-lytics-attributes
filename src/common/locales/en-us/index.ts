@@ -19,6 +19,13 @@ const localeTexts = {
       connectionError: "Connection failed: {error}",
       connectionTesting: "Testing connection...",
     },
+    formattingSection: {
+      title: "Default Formatting",
+      description:
+        "Set the default text and number formatting applied when editors insert attributes. Editors can override these per-attribute.",
+      textTransformLabel: "Default Text Transform",
+      numberFormatLabel: "Default Number Format",
+    },
     allowedSection: {
       title: "Allowed Attributes",
       enableLabel: "Restrict attributes",

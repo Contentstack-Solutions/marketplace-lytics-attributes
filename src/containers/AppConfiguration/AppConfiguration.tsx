@@ -9,6 +9,8 @@ const DEFAULT_CONFIG: LyticsAttributesAppConfig = {
   lyticsApiToken: "",
   restrictAttributes: false,
   allowedAttributes: [],
+  defaultTextTransform: "capitalize",
+  defaultNumberFormat: "number",
 };
 
 interface InstallationData {
@@ -119,6 +121,41 @@ const AppConfiguration: React.FC = () => {
             )}
           </div>
         )}
+      </div>
+
+      <div className="app-config-section">
+        <h3 className="app-config-section-title">{t.formattingSection.title}</h3>
+        <p className="app-config-help" style={{ marginTop: 0, marginBottom: 12 }}>{t.formattingSection.description}</p>
+
+        <div className="app-config-field">
+          <label className="app-config-label">{t.formattingSection.textTransformLabel}</label>
+          <select
+            value={config.defaultTextTransform}
+            onChange={(e) => setConfig((prev) => ({ ...prev, defaultTextTransform: e.target.value }))}
+            className="app-config-select"
+          >
+            <option value="">None</option>
+            <option value="lowercase">lowercase</option>
+            <option value="uppercase">UPPERCASE</option>
+            <option value="capitalize">Capitalize First Letter</option>
+            <option value="titlecase">Capitalize Each Word</option>
+          </select>
+        </div>
+
+        <div className="app-config-field">
+          <label className="app-config-label">{t.formattingSection.numberFormatLabel}</label>
+          <select
+            value={config.defaultNumberFormat}
+            onChange={(e) => setConfig((prev) => ({ ...prev, defaultNumberFormat: e.target.value }))}
+            className="app-config-select"
+          >
+            <option value="">None</option>
+            <option value="number">1,234 (commas)</option>
+            <option value="currency">$1,234.00 (currency)</option>
+            <option value="decimal2">1234.00 (2 decimals)</option>
+            <option value="percent">85% (percent)</option>
+          </select>
+        </div>
       </div>
 
       {config.lyticsApiToken && !attrsLoading && !attrsError && attributes.length > 0 && (
