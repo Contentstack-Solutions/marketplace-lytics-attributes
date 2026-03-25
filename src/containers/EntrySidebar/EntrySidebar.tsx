@@ -146,6 +146,12 @@ const EntrySidebar: React.FC = () => {
         </div>
       </div>
 
+      {(transform || numberFormat || defaultValue) && (
+        <div className="sidebar-preview-hint">
+          Token format: <code>{buildToken("attribute", transform, numberFormat, defaultValue)}</code>
+        </div>
+      )}
+
       <input
         type="text"
         value={search}
@@ -170,7 +176,10 @@ const EntrySidebar: React.FC = () => {
             className="sidebar-attr-item"
             onClick={() => copyToken(attr.slug)}
           >
-            <div className="sidebar-attr-slug">{attr.slug}</div>
+            <div className="sidebar-attr-top">
+              <div className="sidebar-attr-slug">{attr.slug}</div>
+              <code className="sidebar-attr-token">{buildToken(attr.slug, transform, numberFormat, defaultValue)}</code>
+            </div>
             {attr.display_name !== attr.slug && (
               <div className="sidebar-attr-name">{attr.display_name}</div>
             )}

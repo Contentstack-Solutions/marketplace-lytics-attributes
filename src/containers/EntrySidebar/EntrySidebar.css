@@ -91,6 +91,22 @@
   border-color: #6c5ce7;
 }
 
+.sidebar-preview-hint {
+  font-size: 11px;
+  color: #647696;
+  padding: 6px 10px;
+  background: #f9fafb;
+  border: 1px solid #edf0f5;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.sidebar-preview-hint code {
+  font-family: "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #6c5ce7;
+  font-weight: 600;
+}
+
 .sidebar-search {
   width: 100%;
   padding: 6px 10px;
@@ -144,6 +160,23 @@
 
 .sidebar-attr-item:hover {
   background: #f0edfc;
+}
+
+.sidebar-attr-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
+.sidebar-attr-token {
+  font-family: "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  color: #8e96a3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
 }
 
 .sidebar-attr-slug {

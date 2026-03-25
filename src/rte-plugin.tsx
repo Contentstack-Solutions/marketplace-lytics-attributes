@@ -245,6 +245,14 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
   })
   .build();
 
+function buildTokenPreview(slug: string, transform: string, numberFormat: string, defaultValue: string): string {
+  const parts = [slug];
+  if (transform) parts.push(transform);
+  if (numberFormat) parts.push(numberFormat);
+  if (defaultValue) parts.push(defaultValue);
+  return `{{${parts.join("|")}}}`;
+}
+
 const font = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 const mono = "'SF Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace";
 
@@ -328,6 +336,13 @@ const RteAttributePicker: React.FC<{
         </div>
       </div>
 
+      {/* Format preview */}
+      {(transform || numberFormat || defaultValue) && (
+        <div style={{ padding: "6px 16px", fontSize: "11px", color: "#647696", background: "#f9fafb", borderBottom: "1px solid #edf0f5", flexShrink: 0 }}>
+          Token format: <span style={{ fontFamily: mono, color: "#6c5ce7", fontWeight: 600 }}>{buildTokenPreview("attribute", transform, numberFormat, defaultValue)}</span>
+        </div>
+      )}
+
       {/* Search */}
       <div style={{ padding: "10px 16px 8px", flexShrink: 0 }}>
         <input
@@ -367,8 +382,13 @@ const RteAttributePicker: React.FC<{
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f0edfc"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ""; }}
           >
-            <div style={{ fontFamily: mono, fontWeight: 600, color: "#6c5ce7", fontSize: "13px" }}>
-              {attr.slug}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontFamily: mono, fontWeight: 600, color: "#6c5ce7", fontSize: "13px" }}>
+                {attr.slug}
+              </div>
+              <div style={{ fontFamily: mono, fontSize: "10px", color: "#8e96a3", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {buildTokenPreview(attr.slug, transform, numberFormat, defaultValue)}
+              </div>
             </div>
             {attr.display_name !== attr.slug && (
               <div style={{ fontSize: "11px", color: "#8e96a3", marginTop: "1px" }}>
