@@ -203,7 +203,7 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
           .then((data) => {
             const columns = data?.data?.columns || [];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let attrs: LyticsAttribute[] = columns.filter((col: any) => !col.hidden).map((col: any) => ({
+            let attrs: LyticsAttribute[] = columns.filter((col: any) => !col.hidden && !col.private).map((col: any) => ({
               slug: col.as,
               display_name: col.shortdesc || col.as,
               description: col.longdesc || "",

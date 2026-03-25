@@ -33,7 +33,7 @@ export const useLyticsAttributes = (apiToken: string | null) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const attrs: LyticsAttribute[] = columns
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .filter((col: any) => !col.hidden)
+          .filter((col: any) => !col.hidden && !col.private)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .map((col: any) => ({
             slug: col.as,
