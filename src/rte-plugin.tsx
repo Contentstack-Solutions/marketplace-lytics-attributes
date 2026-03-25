@@ -5,15 +5,6 @@ import { LyticsAttribute, LyticsAttributesAppConfig } from "./common/types/types
 
 const ELEMENT_TYPE = "lytics-attribute";
 
-function getServerBaseUrl(): string {
-  const scripts = document.querySelectorAll("script[src*='json-rte.js']");
-  for (let i = 0; i < scripts.length; i++) {
-    const src = (scripts[i] as HTMLScriptElement).src;
-    if (src) return new URL(src).origin;
-  }
-  return "";
-}
-
 const TRANSFORMS = [
   { value: "", label: "None" },
   { value: "lowercase", label: "lowercase" },
@@ -151,7 +142,7 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
     }
 
     const apiToken = config?.lyticsApiToken || null;
-    const baseUrl = getServerBaseUrl();
+    const baseUrl = config?.appBaseUrl || "";
 
     modalRoot = document.createElement("div");
     Object.assign(modalRoot.style, {
@@ -185,6 +176,8 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
     });
 
     document.body.appendChild(modalRoot);
+
+    console.log("[lytics-rte] config:", JSON.stringify({ apiToken: apiToken ? "***" : null, baseUrl }));
 
     if (apiToken && baseUrl) {
       ReactDOM.render(

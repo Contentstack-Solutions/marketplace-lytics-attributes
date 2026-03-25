@@ -11,6 +11,7 @@ const DEFAULT_CONFIG: LyticsAttributesAppConfig = {
   allowedAttributes: [],
   defaultTextTransform: "capitalize",
   defaultNumberFormat: "number",
+  appBaseUrl: window.location.origin,
 };
 
 interface InstallationData {
@@ -59,7 +60,7 @@ const AppConfiguration: React.FC = () => {
     const installation = installationRef.current;
     if (!installation || loading) return;
     installation.setInstallationData({
-      configuration: config,
+      configuration: { ...config, appBaseUrl: window.location.origin },
       serverConfiguration: {},
     });
     installation.setValidity(true);

@@ -19,6 +19,7 @@ export interface LyticsAttributesAppConfig {
   allowedAttributes: string[];
   defaultTextTransform: string;
   defaultNumberFormat: string;
+  appBaseUrl: string;
 }
 
 export interface AttributeFieldData {

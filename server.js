@@ -5,9 +5,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const distDir = path.join(__dirname, "dist");
 
-// CORS header for the RTE plugin bundle
-app.get("/json-rte.js", (req, res, next) => {
+// CORS headers for RTE plugin (runs cross-origin from app.contentstack.com)
+app.use("/json-rte.js", (req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
+
+app.use("/api/lytics", (req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
   next();
 });
 
