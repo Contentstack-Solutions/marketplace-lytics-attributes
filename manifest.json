@@ -10,19 +10,7 @@
     "signed": false,
     "base_url": "http://localhost:3000",
     "locations": [
-      {
-        "type": "cs.cm.stack.custom_field",
-        "meta": [
-          {
-            "multiple": false,
-            "path": "/custom-field",
-            "signed": false,
-            "enabled": true,
-            "data_type": "json"
-          }
-        ]
-      },
-      {
+{
         "type": "cs.cm.stack.config",
         "meta": [
           {
