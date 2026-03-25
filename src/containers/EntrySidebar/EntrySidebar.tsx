@@ -2,8 +2,32 @@ import React, { useMemo, useState } from "react";
 import { useAppConfig } from "../../common/hooks/useAppConfig";
 import { useLyticsAttributes } from "../../common/hooks/useLyticsAttributes";
 import { LyticsAttributesAppConfig } from "../../common/types/types";
-import { buildAttributeToken } from "../../common/utils/functions";
 import "./EntrySidebar.css";
+
+const TRANSFORMS = [
+  { value: "", label: "None" },
+  { value: "lowercase", label: "lowercase" },
+  { value: "uppercase", label: "UPPERCASE" },
+  { value: "capitalize", label: "Capitalize" },
+  { value: "camelCase", label: "camelCase" },
+  { value: "pascalCase", label: "PascalCase" },
+] as const;
+
+const NUMBER_FORMATS = [
+  { value: "", label: "None" },
+  { value: "number", label: "1,234" },
+  { value: "currency", label: "$1,234.00" },
+  { value: "decimal2", label: "1234.00" },
+  { value: "percent", label: "85%" },
+] as const;
+
+function buildToken(slug: string, transform: string, numberFormat: string, defaultValue: string): string {
+  const parts = [slug];
+  if (transform) parts.push(transform);
+  if (numberFormat) parts.push(numberFormat);
+  if (defaultValue) parts.push(defaultValue);
+  return `{{${parts.join("|")}}}`;
+}
 
 const EntrySidebar: React.FC = () => {
   const appConfig = useAppConfig() as unknown as LyticsAttributesAppConfig | null;
@@ -13,6 +37,9 @@ const EntrySidebar: React.FC = () => {
   const { attributes, loading, error } = useLyticsAttributes(apiToken);
   const [copied, setCopied] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [transform, setTransform] = useState("");
+  const [numberFormat, setNumberFormat] = useState("");
+  const [defaultValue, setDefaultValue] = useState("");
 
   const visibleAttributes = useMemo(() => {
     let attrs = attributes;
@@ -30,7 +57,7 @@ const EntrySidebar: React.FC = () => {
   }, [attributes, restrictAttributes, allowedAttributes, search]);
 
   const copyToken = async (slug: string) => {
-    const token = buildAttributeToken(slug);
+    const token = buildToken(slug, transform, numberFormat, defaultValue);
     try {
       await navigator.clipboard.writeText(token);
     } catch {
@@ -43,7 +70,7 @@ const EntrySidebar: React.FC = () => {
       document.execCommand("copy");
       document.body.removeChild(textarea);
     }
-    setCopied(slug);
+    setCopied(token);
     setTimeout(() => setCopied(null), 2000);
   };
 
@@ -80,8 +107,45 @@ const EntrySidebar: React.FC = () => {
     <div className="sidebar-container">
       <div className="sidebar-header">Lytics Attributes</div>
       <p className="sidebar-desc">
-        Click an attribute to copy its token to your clipboard.
+        Set formatting options, then click an attribute to copy.
       </p>
+
+      <div className="sidebar-options">
+        <div className="sidebar-option-row">
+          <label className="sidebar-option-label">Text</label>
+          <select
+            value={transform}
+            onChange={(e) => setTransform(e.target.value)}
+            className="sidebar-select"
+          >
+            {TRANSFORMS.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="sidebar-option-row">
+          <label className="sidebar-option-label">Number</label>
+          <select
+            value={numberFormat}
+            onChange={(e) => setNumberFormat(e.target.value)}
+            className="sidebar-select"
+          >
+            {NUMBER_FORMATS.map((f) => (
+              <option key={f.value} value={f.value}>{f.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="sidebar-option-row">
+          <label className="sidebar-option-label">Default</label>
+          <input
+            type="text"
+            value={defaultValue}
+            onChange={(e) => setDefaultValue(e.target.value)}
+            placeholder="Fallback value"
+            className="sidebar-default-input"
+          />
+        </div>
+      </div>
 
       <input
         type="text"
@@ -93,7 +157,7 @@ const EntrySidebar: React.FC = () => {
 
       {copied && (
         <div className="sidebar-copied">
-          Copied <code>{buildAttributeToken(copied)}</code>
+          Copied <code>{copied}</code>
         </div>
       )}
 
@@ -104,7 +168,7 @@ const EntrySidebar: React.FC = () => {
         {visibleAttributes.map((attr) => (
           <div
             key={attr.slug}
-            className={`sidebar-attr-item ${copied === attr.slug ? "sidebar-attr-copied" : ""}`}
+            className="sidebar-attr-item"
             onClick={() => copyToken(attr.slug)}
           >
             <div className="sidebar-attr-slug">{attr.slug}</div>

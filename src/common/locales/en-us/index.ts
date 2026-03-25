@@ -3,6 +3,12 @@ const localeTexts = {
     title: "Lytics Attributes Configuration",
     description:
       "Configure your Lytics API connection to enable attribute browsing and selection.",
+    integrationWarning: {
+      title: "Frontend Integration Required",
+      message:
+        "Attribute tokens inserted into content must be resolved on your frontend using the Lytics JavaScript tag. Without this step, tokens will appear as raw text (e.g. {{first_name}}) to visitors.",
+      linkText: "View Frontend Integration Guide →",
+    },
     lyticsSection: {
       title: "Lytics API Connection",
       apiTokenLabel: "Lytics API Token",

@@ -34,6 +34,63 @@
   font-size: 12px;
 }
 
+.sidebar-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f4f6f9;
+  border-radius: 6px;
+  border: 1px solid #edf0f5;
+}
+
+.sidebar-option-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-option-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #647696;
+  width: 48px;
+  flex-shrink: 0;
+}
+
+.sidebar-select {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid #c1c9d2;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #222;
+  background: #fff;
+}
+
+.sidebar-select:focus {
+  outline: none;
+  border-color: #6c5ce7;
+}
+
+.sidebar-default-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid #c1c9d2;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #222;
+  background: #fff;
+}
+
+.sidebar-default-input:focus {
+  outline: none;
+  border-color: #6c5ce7;
+}
+
 .sidebar-search {
   width: 100%;
   padding: 6px 10px;
@@ -59,6 +116,7 @@
   color: #0e7f3e;
   font-size: 12px;
   margin-bottom: 8px;
+  word-break: break-all;
 }
 
 .sidebar-copied code {
@@ -67,7 +125,7 @@
 }
 
 .sidebar-attr-list {
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: auto;
   border: 1px solid #edf0f5;
   border-radius: 4px;
@@ -86,10 +144,6 @@
 
 .sidebar-attr-item:hover {
   background: #f0edfc;
-}
-
-.sidebar-attr-copied {
-  background: #ecfdf5;
 }
 
 .sidebar-attr-slug {

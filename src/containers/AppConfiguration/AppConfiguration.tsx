@@ -74,6 +74,19 @@ const AppConfiguration: React.FC = () => {
       <h2 className="app-config-title">{t.title}</h2>
       <p className="app-config-description">{t.description}</p>
 
+      <div className="app-config-warning">
+        <strong>{t.integrationWarning.title}</strong>
+        <p>{t.integrationWarning.message}</p>
+        <a
+          href="https://github.com/Contentstack-Solutions/marketplace-lytics-attributes/blob/main/FRONTEND_INTEGRATION.md"
+          target="_blank"
+          rel="noreferrer"
+          className="app-config-warning-link"
+        >
+          {t.integrationWarning.linkText}
+        </a>
+      </div>
+
       <div className="app-config-section">
         <h3 className="app-config-section-title">{t.lyticsSection.title}</h3>
 
