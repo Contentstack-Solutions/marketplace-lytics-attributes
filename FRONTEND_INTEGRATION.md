@@ -10,28 +10,55 @@ Add the Lytics JavaScript tag to your site. The tag must load before you attempt
 <script src="https://c.lytics.io/api/tag/<YOUR_ACCOUNT_ID>/lio.js"></script>
 ```
 
-## How Tokens Work
+## Token Syntax
 
 ### Text Fields (Single-line, Multi-line)
 
-Tokens appear as plain text in the format:
+Tokens are inserted via the entry sidebar and appear as plain text. The format supports optional formatting modifiers and a default value, separated by `|`:
 
 ```
-Welcome back, {{first_name|visitor}}! You have {{num_visits}} visits.
+{{slug}}
+{{slug|default}}
+{{slug|transform|default}}
+{{slug|transform|numberFormat|default}}
 ```
 
-- `{{slug}}` — replaced with the profile attribute value
-- `{{slug|default}}` — uses `default` if the attribute is empty
+**Examples:**
+
+| Token | Output |
+|---|---|
+| `{{first_name}}` | `Todd` |
+| `{{first_name\|visitor}}` | `Todd` (or `visitor` if empty) |
+| `{{first_name\|uppercase}}` | `TODD` |
+| `{{first_name\|capitalize\|visitor}}` | `Todd` (or `Visitor` if empty) |
+| `{{score_consistency\|number}}` | `1,234` |
+| `{{cart_value_total\|currency}}` | `$1,234.00` |
+| `{{score_propensity\|percent}}` | `62%` |
+
+**Available modifiers:**
+
+| Modifier | Type | Effect |
+|---|---|---|
+| `lowercase` | text | all lowercase |
+| `uppercase` | text | ALL UPPERCASE |
+| `capitalize` | text | First letter capitalized |
+| `titlecase` | text | Each Word Capitalized |
+| `number` | number | Comma-separated (1,234) |
+| `currency` | number | Dollar format ($1,234.00) |
+| `decimal2` | number | Two decimal places (1234.00) |
+| `percent` | number | Percentage (85%) |
 
 ### JSON RTE Fields
 
-In JSON RTE content, tokens are stored as inline Slate nodes:
+In JSON RTE content, tokens are stored as inline Slate nodes with structured attributes:
 
 ```json
 {
   "type": "lytics-attribute",
   "attrs": {
     "lytics-slug": "first_name",
+    "lytics-transform": "uppercase",
+    "lytics-format": "",
     "lytics-default": "visitor"
   },
   "children": [{ "text": "" }]
@@ -58,6 +85,34 @@ function getLyticsProfile() {
 
 > **Important:** Profile data is at `entity.data.user`, not `entity.data`.
 
+### Applying Transforms
+
+```js
+function applyTransform(value, transform) {
+  if (value == null) return value;
+  const str = String(value);
+  switch (transform) {
+    case 'lowercase': return str.toLowerCase();
+    case 'uppercase': return str.toUpperCase();
+    case 'capitalize': return str.charAt(0).toUpperCase() + str.slice(1);
+    case 'titlecase': return str.replace(/\b\w/g, c => c.toUpperCase());
+    default: return str;
+  }
+}
+
+function applyNumberFormat(value, format) {
+  const num = Number(value);
+  if (isNaN(num)) return String(value);
+  switch (format) {
+    case 'number': return num.toLocaleString();
+    case 'currency': return num.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    case 'decimal2': return num.toFixed(2);
+    case 'percent': return `${num}%`;
+    default: return String(value);
+  }
+}
+```
+
 ### Resolving Text Tokens
 
 ```js
@@ -65,10 +120,32 @@ function resolveTextTokens(text, profile) {
   if (!text || !profile) return text;
   return text.replace(
     /\{\{([a-zA-Z_][\w.]*?)(?:\|([^}]*))?\}\}/g,
-    (_, slug, fallback) => {
+    (match, slug, modifiers) => {
       const value = profile[slug];
-      if (value == null || value === '') return fallback || '';
-      return String(value);
+
+      // Parse modifiers: could be "transform|format|default" in any combination
+      const parts = modifiers ? modifiers.split('|') : [];
+      const transforms = ['lowercase', 'uppercase', 'capitalize', 'titlecase'];
+      const formats = ['number', 'currency', 'decimal2', 'percent'];
+
+      let transform = '';
+      let format = '';
+      let fallback = '';
+
+      for (const part of parts) {
+        if (transforms.includes(part)) transform = part;
+        else if (formats.includes(part)) format = part;
+        else fallback = part; // anything else is the default value
+      }
+
+      if (value == null || value === '') return fallback;
+
+      let result = value;
+      if (format) result = applyNumberFormat(result, format);
+      if (transform) result = applyTransform(result, transform);
+      else result = String(result);
+
+      return result;
     }
   );
 }
@@ -79,20 +156,20 @@ function resolveTextTokens(text, profile) {
 ```js
 const profile = await getLyticsProfile();
 const resolved = resolveTextTokens(entry.excerpt, profile);
-// "Welcome back, Todd! You have 42 visits."
+// "Welcome back, TODD! You have 1,234 visits."
 ```
 
 ### Resolving JSON RTE Nodes
 
-When rendering JSON RTE content, check for `lytics-attribute` nodes and replace them with profile values.
-
-**For `contentstack-utils` or custom renderers:**
+When rendering JSON RTE content, check for `lytics-attribute` nodes. These have explicit attributes for each option:
 
 ```js
 function resolveLyticsNode(node, profile) {
   if (node.type !== 'lytics-attribute') return null;
 
   const slug = node.attrs?.['lytics-slug'];
+  const transform = node.attrs?.['lytics-transform'] || '';
+  const format = node.attrs?.['lytics-format'] || '';
   const fallback = node.attrs?.['lytics-default'] || '';
 
   if (!slug) return fallback;
@@ -100,7 +177,13 @@ function resolveLyticsNode(node, profile) {
 
   const value = profile[slug];
   if (value == null || value === '') return fallback;
-  return String(value);
+
+  let result = value;
+  if (format) result = applyNumberFormat(result, format);
+  if (transform) result = applyTransform(result, transform);
+  else result = String(result);
+
+  return result;
 }
 ```
 
@@ -140,22 +223,11 @@ export function useLyticsProfile() {
 ```tsx
 'use client';
 import { useLyticsProfile } from './useLyticsProfile';
-
-function resolveTokens(text: string, profile: Record<string, any> | null): string {
-  if (!text || !profile) return text || '';
-  return text.replace(
-    /\{\{([a-zA-Z_][\w.]*?)(?:\|([^}]*))?\}\}/g,
-    (_, slug, fallback) => {
-      const value = profile[slug];
-      if (value == null || value === '') return fallback || '';
-      return String(value);
-    }
-  );
-}
+import { resolveTextTokens } from './lyticsResolver'; // the function from above
 
 export function PersonalizedText({ children }: { children: string }) {
   const profile = useLyticsProfile();
-  return <>{resolveTokens(children, profile)}</>;
+  return <>{resolveTextTokens(children, profile)}</>;
 }
 ```
 
@@ -172,19 +244,11 @@ If using `@contentstack/utils` for JSON RTE rendering, add a custom node rendere
 ```tsx
 'use client';
 import { useLyticsProfile } from './useLyticsProfile';
+import { resolveLyticsNode } from './lyticsResolver'; // the function from above
 
 export function LyticsAttributeNode({ node }: { node: any }) {
   const profile = useLyticsProfile();
-
-  const slug = node.attrs?.['lytics-slug'];
-  const fallback = node.attrs?.['lytics-default'] || '';
-
-  if (!slug) return <>{fallback}</>;
-  if (!profile) return <>{fallback}</>;
-
-  const value = profile[slug];
-  if (value == null || value === '') return <>{fallback}</>;
-  return <>{String(value)}</>;
+  return <>{resolveLyticsNode(node, profile)}</>;
 }
 ```
 
@@ -210,6 +274,6 @@ jstag.send({ email: "test@example.com" });
 
 ## Notes
 
-- Tokens render the **fallback value** (or empty string) until the Lytics profile loads. This means there is a brief flash on first render. Consider hiding personalized content until the profile is available, or using skeleton placeholders.
+- Tokens render the **fallback value** (or empty string) until the Lytics profile loads. Consider hiding personalized content until the profile is available, or using skeleton placeholders.
 - Profile data is only available client-side. Server-rendered pages (SSG/SSR) will always render fallbacks. Use `'use client'` components for personalized sections.
-- The `{{slug|default}}` syntax in text fields is a convention — the frontend code above enforces it. If you need more complex formatting (currency, case transforms), handle that in the resolver function per your needs.
+- The `applyTransform` and `applyNumberFormat` functions above handle all modifiers that the marketplace app UI offers. You can extend them if needed.

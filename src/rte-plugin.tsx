@@ -18,9 +18,8 @@ const TRANSFORMS = [
   { value: "", label: "None" },
   { value: "lowercase", label: "lowercase" },
   { value: "uppercase", label: "UPPERCASE" },
-  { value: "capitalize", label: "Capitalize" },
-  { value: "camelCase", label: "camelCase" },
-  { value: "pascalCase", label: "PascalCase" },
+  { value: "capitalize", label: "Capitalize First Letter" },
+  { value: "titlecase", label: "Capitalize Each Word" },
 ];
 
 const NUMBER_FORMATS = [
