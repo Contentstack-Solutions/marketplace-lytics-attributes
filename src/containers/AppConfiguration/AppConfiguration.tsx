@@ -7,7 +7,6 @@ import "./AppConfiguration.css";
 
 const DEFAULT_CONFIG: LyticsAttributesAppConfig = {
   lyticsApiToken: "",
-  enableDefaults: true,
   restrictAttributes: false,
   allowedAttributes: [],
 };
@@ -107,19 +106,6 @@ const AppConfiguration: React.FC = () => {
             )}
           </div>
         )}
-      </div>
-
-      <div className="app-config-section">
-        <h3 className="app-config-section-title">{t.defaultsSection.title}</h3>
-        <label className="app-config-toggle">
-          <input
-            type="checkbox"
-            checked={config.enableDefaults}
-            onChange={(e) => setConfig((prev) => ({ ...prev, enableDefaults: e.target.checked }))}
-          />
-          <span className="app-config-toggle-label">{t.defaultsSection.enableDefaultsLabel}</span>
-        </label>
-        <p className="app-config-help">{t.defaultsSection.enableDefaultsHelp}</p>
       </div>
 
       {config.lyticsApiToken && !attrsLoading && !attrsError && attributes.length > 0 && (

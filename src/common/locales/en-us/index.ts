@@ -13,12 +13,6 @@ const localeTexts = {
       connectionError: "Connection failed: {error}",
       connectionTesting: "Testing connection...",
     },
-    defaultsSection: {
-      title: "Default Values",
-      enableDefaultsLabel: "Enable default values",
-      enableDefaultsHelp:
-        'When enabled, tokens with the syntax {{attribute|default}} will use the default value if the attribute is empty. When disabled, the default portion is ignored.',
-    },
     allowedSection: {
       title: "Allowed Attributes",
       enableLabel: "Restrict attributes",

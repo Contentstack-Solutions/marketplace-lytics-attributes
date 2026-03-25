@@ -203,7 +203,6 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
                 attributes={attrs}
                 onInsert={insertAttribute}
                 onCancel={cleanup}
-                enableDefaults={config?.enableDefaults ?? true}
               />,
               modalContent
             );
@@ -231,8 +230,7 @@ const RteAttributePicker: React.FC<{
   attributes: LyticsAttribute[];
   onInsert: (slug: string, defaultValue: string) => void;
   onCancel: () => void;
-  enableDefaults: boolean;
-}> = ({ attributes, onInsert, onCancel, enableDefaults }) => {
+}> = ({ attributes, onInsert, onCancel }) => {
   const [search, setSearch] = React.useState("");
 
   const filtered = React.useMemo(() => {
@@ -244,12 +242,7 @@ const RteAttributePicker: React.FC<{
   }, [attributes, search]);
 
   const handleClick = (slug: string) => {
-    if (enableDefaults) {
-      const def = window.prompt("Default value (leave empty for none):", "");
-      onInsert(slug, def || "");
-    } else {
-      onInsert(slug, "");
-    }
+    onInsert(slug, "");
   };
 
   const font = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
