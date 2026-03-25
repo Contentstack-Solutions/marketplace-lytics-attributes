@@ -134,16 +134,7 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
       }
     };
 
-    let config: LyticsAttributesAppConfig | null = null;
-    try {
-      config = rte.getConfig?.() as LyticsAttributesAppConfig | null;
-    } catch {
-      // Config not available
-    }
-
-    const apiToken = config?.lyticsApiToken || null;
-    const baseUrl = config?.appBaseUrl || "";
-
+    // Create modal with loading state
     modalRoot = document.createElement("div");
     Object.assign(modalRoot.style, {
       position: "fixed",
@@ -177,72 +168,80 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
 
     document.body.appendChild(modalRoot);
 
-    console.log("[lytics-rte] config:", JSON.stringify({ apiToken: apiToken ? "***" : null, baseUrl }));
+    ReactDOM.render(
+      <div style={{ padding: "16px", textAlign: "center", color: "#647696" }}>Loading...</div>,
+      modalContent
+    );
 
-    if (apiToken && baseUrl) {
-      ReactDOM.render(
-        <div style={{ padding: "16px", textAlign: "center", color: "#647696" }}>Loading attributes...</div>,
-        modalContent
-      );
+    // rte.getConfig() returns a Promise — await it, then fetch attributes
+    Promise.resolve(rte.getConfig?.())
+      .then((config: LyticsAttributesAppConfig | null) => {
+        const apiToken = config?.lyticsApiToken || null;
+        const baseUrl = config?.appBaseUrl || "";
 
-      fetch(`${baseUrl}/api/lytics/schema`, {
-        headers: { Authorization: apiToken },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error(`API returned ${res.status}`);
-          return res.json();
-        })
-        .then((data) => {
-          const columns = data?.data?.columns || [];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          let attrs: LyticsAttribute[] = columns.filter((col: any) => !col.hidden).map((col: any) => ({
-            slug: col.as,
-            display_name: col.shortdesc || col.as,
-            description: col.longdesc || "",
-            type: col.type || "string",
-          }));
-          attrs.sort((a, b) => a.slug.localeCompare(b.slug));
-
-          if (config?.restrictAttributes && config.allowedAttributes?.length > 0) {
-            const allowed = new Set(config.allowedAttributes);
-            attrs = attrs.filter((a) => allowed.has(a.slug));
-          }
-
+        if (!apiToken || !baseUrl) {
           if (modalContent) {
             ReactDOM.render(
-              <RteAttributePicker
-                attributes={attrs}
-                onInsert={insertAttribute}
-                onCancel={cleanup}
-                defaultTransform={config?.defaultTextTransform || "capitalize"}
-                defaultNumberFormat={config?.defaultNumberFormat || "number"}
-              />,
-              modalContent
-            );
-          }
-        })
-        .catch((err) => {
-          if (modalContent) {
-            ReactDOM.render(
-              <div style={{ padding: "16px", color: "#d83a52", fontSize: "13px" }}>
-                Failed to load attributes: {err.message}
+              <div style={{ padding: "16px", color: "#647696", fontSize: "13px" }}>
+                No Lytics API token configured. Set one up in App Configuration.
                 <br />
                 <button onClick={cleanup} style={{ marginTop: "8px", padding: "6px 12px", border: "1px solid #c1c9d2", borderRadius: "4px", background: "#fff", cursor: "pointer" }}>Close</button>
               </div>,
               modalContent
             );
           }
-        });
-    } else {
-      ReactDOM.render(
-        <div style={{ padding: "16px", color: "#647696", fontSize: "13px" }}>
-          No Lytics API token configured. Set one up in App Configuration.
-          <br />
-          <button onClick={cleanup} style={{ marginTop: "8px", padding: "6px 12px", border: "1px solid #c1c9d2", borderRadius: "4px", background: "#fff", cursor: "pointer" }}>Close</button>
-        </div>,
-        modalContent
-      );
-    }
+          return;
+        }
+
+        return fetch(`${baseUrl}/api/lytics/schema`, {
+          headers: { Authorization: apiToken },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error(`API returned ${res.status}`);
+            return res.json();
+          })
+          .then((data) => {
+            const columns = data?.data?.columns || [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let attrs: LyticsAttribute[] = columns.filter((col: any) => !col.hidden).map((col: any) => ({
+              slug: col.as,
+              display_name: col.shortdesc || col.as,
+              description: col.longdesc || "",
+              type: col.type || "string",
+            }));
+            attrs.sort((a, b) => a.slug.localeCompare(b.slug));
+
+            if (config?.restrictAttributes && config.allowedAttributes?.length > 0) {
+              const allowed = new Set(config.allowedAttributes);
+              attrs = attrs.filter((a) => allowed.has(a.slug));
+            }
+
+            if (modalContent) {
+              ReactDOM.render(
+                <RteAttributePicker
+                  attributes={attrs}
+                  onInsert={insertAttribute}
+                  onCancel={cleanup}
+                  defaultTransform={config?.defaultTextTransform || "capitalize"}
+                  defaultNumberFormat={config?.defaultNumberFormat || "number"}
+                />,
+                modalContent
+              );
+            }
+          });
+      })
+      .catch((err: Error) => {
+        if (modalContent) {
+          ReactDOM.render(
+            <div style={{ padding: "16px", color: "#d83a52", fontSize: "13px" }}>
+              Failed to load: {err.message}
+              <br />
+              <button onClick={cleanup} style={{ marginTop: "8px", padding: "6px 12px", border: "1px solid #c1c9d2", borderRadius: "4px", background: "#fff", cursor: "pointer" }}>Close</button>
+            </div>,
+            modalContent
+          );
+        }
+      });
   })
   .build();
 
