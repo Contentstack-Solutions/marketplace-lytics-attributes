@@ -5,9 +5,6 @@
 ### Content Type Sidebar — Per-Content-Type Configuration
 Add a content type sidebar UI location that allows admins to enable/disable Lytics attribute insertion per content type. This would let teams control which content types support personalization, preventing editors from inserting tokens into content types where the frontend doesn't resolve them.
 
-### Audience-Based Content Variants
-Allow editors to create content variants tied to Lytics audience segments. Instead of just inserting attribute values, editors could define "if user is in segment X, show content A; otherwise show content B." This would require a more complex data model and frontend resolver.
-
 ### Attribute Preview with Live Profile Data
 Requires Lytics entity API access (not currently available with Schema View + User Profile View token permissions). Would show a live preview of what resolved content would look like for a real user profile. Blocked until entity API access is available.
 

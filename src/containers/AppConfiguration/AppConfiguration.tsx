@@ -9,8 +9,8 @@ const DEFAULT_CONFIG: LyticsAttributesAppConfig = {
   lyticsApiToken: "",
   restrictAttributes: false,
   allowedAttributes: [],
-  defaultTextTransform: "capitalize",
-  defaultNumberFormat: "number",
+  defaultTextTransform: "",
+  defaultNumberFormat: "",
   appBaseUrl: window.location.origin,
 };
 

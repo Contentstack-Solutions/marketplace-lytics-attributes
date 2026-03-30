@@ -222,8 +222,8 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
                   attributes={attrs}
                   onInsert={insertAttribute}
                   onCancel={cleanup}
-                  defaultTransform={config?.defaultTextTransform || "capitalize"}
-                  defaultNumberFormat={config?.defaultNumberFormat || "number"}
+                  defaultTransform={config?.defaultTextTransform ?? ""}
+                  defaultNumberFormat={config?.defaultNumberFormat ?? ""}
                 />,
                 modalContent
               );
