@@ -7,8 +7,11 @@ This guide explains how to resolve Lytics profile attribute tokens on the fronte
 Add the Lytics JavaScript tag to your site. The tag must load before you attempt to resolve tokens.
 
 ```html
-<script src="https://c.lytics.io/api/tag/<YOUR_ACCOUNT_ID>/lio.js"></script>
+<!-- Get the exact tag URL from your Lytics account settings -->
+<script src="https://c.lytics.io/api/tag/<YOUR_ACCOUNT_ID>/latest.min.js"></script>
 ```
+
+> **Note:** The exact script filename may vary by account. Check your Lytics account's JavaScript tag settings for the correct URL.
 
 ## Token Syntax
 
