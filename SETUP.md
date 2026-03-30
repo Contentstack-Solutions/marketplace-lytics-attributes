@@ -29,7 +29,7 @@ After deployment, note the URL (e.g. `https://marketplace-lytics-attributes.cont
 
 1. Go to **Contentstack Developer Hub** → **Manage Apps** → **+ New App**
 2. Set the app name to **Lytics Attributes** (or your preferred name)
-3. Set **Target Type** to **Stack**
+3. Set **App Type** to **Stack**
 
 ### Hosting Settings
 
