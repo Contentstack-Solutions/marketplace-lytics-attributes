@@ -127,7 +127,7 @@ const LyticsAttributePlugin = new PluginBuilder(ELEMENT_TYPE)
       const editor = rte._adv?.editor;
       const Transforms = rte._adv?.Transforms;
       if (editor && Transforms) {
-        Transforms.insertNodes(editor, node, { select: true });
+        Transforms.insertNodes(editor, node, { at: savedSelection || editor.selection, select: true });
       } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         rte.insertNode(node as any, { select: true });
